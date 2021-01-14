@@ -1,32 +1,23 @@
 package com.example.shardingjdbc.controller;
 
 import com.example.shardingjdbc.entity.User;
-import com.example.shardingjdbc.mapper.UserMapper;
-import org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator;
+import com.example.shardingjdbc.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import java.util.Date;
 
-@Controller
+@RestController
 public class UserController {
-    @Autowired
-    private UserMapper userMapper;
 
-    @Resource
-    SnowflakeShardingKeyGenerator userKeyGenerator;
+    @Autowired
+    private UserRepository userRepository;
 
     @RequestMapping("/user/save")
-    @ResponseBody
     public String save() {
         for (int i = 0; i < 50; i++) {
-            Long id = (Long)userKeyGenerator.generateKey();
             User user = new User();
-            user.setId(id);
             user.setName("test" + i);
             user.setCityId(i);
             user.setCreateTime(new Date());
@@ -35,16 +26,9 @@ public class UserController {
             user.setEmail("xxxxx");
             user.setCreateTime(new Date());
             user.setPassword("eeeeeeeeeeee");
-            userMapper.save(user);
+            userRepository.save(user);
         }
 
         return "success";
-    }
-
-    @RequestMapping("/user/get/{id}")
-    @ResponseBody
-    public User get(@PathVariable Long id) {
-        User user = userMapper.get(id);
-        return user;
     }
 }
